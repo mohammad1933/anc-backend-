@@ -16,13 +16,15 @@ class CatalogResource extends JsonResource
     public function toArray(Request $request): array
     {
         $data = parent::toArray($request);
-        $data['thumbnail_path'] = $this->imageUrl($this->thumbnail_path);
-        $data['pdf_path'] = $this->imageUrl($this->pdf_path);
+        $data['thumbnail_url'] = $this->fileUrl($this->thumbnail_path);
+        $data['pdf_url'] = $this->fileUrl($this->pdf_path);
+        $data['thumbnail_path'] = $data['thumbnail_url'];
+        $data['pdf_path'] = $data['pdf_url'];
 
         return $data;
     }
 
-    private function imageUrl(?string $path): ?string
+    private function fileUrl(?string $path): ?string
     {
         return $path && ! str_starts_with($path, 'http') && ! str_starts_with($path, '/')
             ? Storage::disk('public')->url($path)

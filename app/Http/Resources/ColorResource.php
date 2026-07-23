@@ -16,7 +16,8 @@ class ColorResource extends JsonResource
     public function toArray(Request $request): array
     {
         $data = parent::toArray($request);
-        $data['swatch_path'] = $this->imageUrl($this->swatch_path);
+        $data['swatch_url'] = $this->imageUrl($this->swatch_path);
+        $data['swatch_path'] = $data['swatch_url'];
 
         return $data;
     }

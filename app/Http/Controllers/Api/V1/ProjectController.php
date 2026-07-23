@@ -9,6 +9,7 @@ use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
@@ -47,7 +48,12 @@ class ProjectController extends Controller
     public function update(UpsertProjectRequest $request, Project $project): ProjectResource
     {
         $this->ensureOwned($request, $project);
-        $project->update($request->safe()->except('cover_image_file'));
+        $data = $request->safe()->except('cover_image_file');
+        if ($request->hasFile('cover_image_file')) {
+            $this->deleteFile($project->cover_image);
+            $data['cover_image'] = $request->file('cover_image_file')->store('projects/covers', 'public');
+        }
+        $project->update($data);
 
         return new ProjectResource($project->refresh());
     }
@@ -55,6 +61,10 @@ class ProjectController extends Controller
     public function destroy(Request $request, Project $project): JsonResponse
     {
         $this->ensureOwned($request, $project);
+        $this->deleteFile($project->cover_image);
+        foreach ($project->inspiration_images ?? [] as $path) {
+            $this->deleteFile($path);
+        }
         $project->delete();
 
         return response()->json(status: 204);
@@ -91,5 +101,12 @@ class ProjectController extends Controller
     private function ensureOwned(Request $request, Project $project): void
     {
         abort_unless($project->user_id === $request->user()->getKey(), 404);
+    }
+
+    private function deleteFile(?string $path): void
+    {
+        if ($path && ! str_starts_with($path, 'http') && ! str_starts_with($path, '/')) {
+            Storage::disk('public')->delete($path);
+        }
     }
 }

@@ -16,7 +16,8 @@ class CategoryResource extends JsonResource
     public function toArray(Request $request): array
     {
         $data = parent::toArray($request);
-        $data['image_path'] = $this->imageUrl($this->image_path);
+        $data['image_url'] = $this->imageUrl($this->image_path);
+        $data['image_path'] = $data['image_url'];
 
         return $data;
     }
