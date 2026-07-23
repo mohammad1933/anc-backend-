@@ -49,7 +49,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::post('favorites/{favorite}/sample-request', [FavoriteActionController::class, 'requestSample']);
     });
 
-    Route::middleware('jwt:admin')->group(function () {
+    Route::middleware('jwt:admin')->name('admin.')->group(function () {
         Route::get('dashboard', DashboardController::class);
         Route::apiResource('admin/projects', AdminProjectController::class)->only(['index', 'show', 'destroy']);
         Route::apiResource('categories', CategoryController::class)->only(['store', 'update', 'destroy']);
