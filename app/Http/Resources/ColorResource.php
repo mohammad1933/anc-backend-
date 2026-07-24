@@ -18,6 +18,9 @@ class ColorResource extends JsonResource
         $data = parent::toArray($request);
         $data['swatch_url'] = $this->imageUrl($this->swatch_path);
         $data['swatch_path'] = $data['swatch_url'];
+        $data['texture_url'] = $this->swatch_path
+            ? route('colors.texture', ['color' => $this->resource])
+            : null;
 
         return $data;
     }

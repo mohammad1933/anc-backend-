@@ -26,7 +26,7 @@ class UpsertColorRequest extends FormRequest
         return [
             'catalog_id' => ['required', 'exists:catalogs,id'], 'name' => ['required', 'string', 'max:255'], 'code' => ['required', 'string', 'max:100'],
             'sku' => ['required', 'string', 'max:100', Rule::unique('colors')->ignore($this->route('color'))],
-            'type' => ['required', Rule::in(['plain', 'pattern'])], 'hex_code' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$/'],
+            'type' => ['required', Rule::in(['plain', 'pattern'])],
             'color_family' => ['nullable', 'string', 'max:100'], 'price' => ['nullable', 'numeric', 'min:0'], 'currency' => ['required', 'string', 'size:3'],
             'stock_quantity' => ['integer', 'min:0'], 'stock_status' => ['required', Rule::in(['in_stock', 'low_stock', 'out_of_stock', 'check_stock'])],
             'swatch' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'], 'is_active' => ['boolean'],

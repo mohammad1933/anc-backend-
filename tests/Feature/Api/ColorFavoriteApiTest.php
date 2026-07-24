@@ -62,7 +62,6 @@ class ColorFavoriteApiTest extends TestCase
             'name' => 'Ruby',
             'code' => 'RV-01',
             'sku' => 'RV-01',
-            'hex_code' => '#991122',
         ]);
     }
 }

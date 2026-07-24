@@ -1,14 +1,15 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AdminProjectController;
+use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CatalogController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\ColorController;
 use App\Http\Controllers\Api\V1\ColorFavoriteController;
 use App\Http\Controllers\Api\V1\CustomerController;
 use App\Http\Controllers\Api\V1\DashboardController;
-use App\Http\Controllers\Api\V1\FavoriteController;
 use App\Http\Controllers\Api\V1\FavoriteActionController;
+use App\Http\Controllers\Api\V1\FavoriteController;
 use App\Http\Controllers\Api\V1\FavoriteFolderController;
 use App\Http\Controllers\Api\V1\InquiryController;
 use App\Http\Controllers\Api\V1\NewsletterSubscriptionController;
@@ -17,7 +18,6 @@ use App\Http\Controllers\Api\V1\ProjectInspirationController;
 use App\Http\Controllers\Api\V1\SampleRequestController;
 use App\Http\Controllers\Api\V1\ServiceController;
 use App\Http\Controllers\Api\V1\SettingController;
-use App\Http\Controllers\Api\V1\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->middleware('throttle:api')->group(function () {
@@ -30,6 +30,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
 
     Route::apiResource('categories', CategoryController::class)->only(['index', 'show']);
     Route::apiResource('catalogs', CatalogController::class)->only(['index', 'show']);
+    Route::get('colors/{color}/texture', [ColorController::class, 'texture'])->name('colors.texture');
     Route::apiResource('colors', ColorController::class)->only(['index', 'show']);
     Route::apiResource('services', ServiceController::class)->only(['index', 'show']);
     Route::post('sample-requests', [SampleRequestController::class, 'store']);

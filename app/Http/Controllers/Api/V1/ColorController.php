@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ColorController extends Controller
 {
@@ -37,7 +38,23 @@ class ColorController extends Controller
         return new ColorResource(Color::create($data)->load('catalog'));
     }
 
-    public function show(Color $color): ColorResource { return new ColorResource($color->load('catalog')); }
+    public function show(Color $color): ColorResource
+    {
+        return new ColorResource($color->load('catalog'));
+    }
+
+    public function texture(Color $color): StreamedResponse
+    {
+        abort_if(! $color->swatch_path || str_starts_with($color->swatch_path, 'http'), 404);
+
+        $disk = Storage::disk('public');
+        abort_unless($disk->exists($color->swatch_path), 404);
+
+        return $disk->response($color->swatch_path, headers: [
+            'Cache-Control' => 'public, max-age=86400',
+            'Access-Control-Allow-Origin' => '*',
+        ]);
+    }
 
     public function update(UpsertColorRequest $request, Color $color): ColorResource
     {
@@ -59,7 +76,12 @@ class ColorController extends Controller
         return response()->json(status: 204);
     }
 
-    public function toggle(Color $color): ColorResource { $color->update(['is_active' => ! $color->is_active]); return new ColorResource($color->refresh()); }
+    public function toggle(Color $color): ColorResource
+    {
+        $color->update(['is_active' => ! $color->is_active]);
+
+        return new ColorResource($color->refresh());
+    }
 
     private function deleteImage(?string $path): void
     {
