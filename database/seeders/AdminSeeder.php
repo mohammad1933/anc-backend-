@@ -20,7 +20,7 @@ class AdminSeeder extends Seeder
             );
         }
 
-        User::firstOrCreate(
+        User::updateOrCreate(
             ['email' => $email],
             [
                 'name' => env('ADMIN_NAME', 'Admin'),

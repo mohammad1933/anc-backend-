@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use App\Models\User;
+use Database\Seeders\AdminSeeder;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -82,5 +83,21 @@ class AuthenticationApiTest extends TestCase
             'email' => 'm@m.com',
             'password' => 'mohamad1950',
         ])->assertUnprocessable();
+    }
+
+    public function test_admin_seeder_synchronizes_an_existing_accounts_role_and_password(): void
+    {
+        User::create([
+            'name' => 'Existing Customer',
+            'email' => env('ADMIN_EMAIL'),
+            'password' => 'outdated-password',
+            'role' => 'customer',
+        ]);
+
+        $this->seed(AdminSeeder::class);
+
+        $admin = User::where('email', env('ADMIN_EMAIL'))->firstOrFail();
+        $this->assertSame('admin', $admin->role);
+        $this->assertTrue(Hash::check(env('ADMIN_PASSWORD'), $admin->password));
     }
 }
