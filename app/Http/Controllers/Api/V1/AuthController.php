@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterAdminRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use App\Services\JwtService;
@@ -30,6 +31,17 @@ class AuthController extends Controller
     public function adminLogin(LoginRequest $request): JsonResponse
     {
         return $this->attempt($request, 'admin');
+    }
+
+    public function registerAdmin(RegisterAdminRequest $request): JsonResponse
+    {
+        $admin = User::create([
+            ...$request->safe()->only(['name', 'email', 'password']),
+            'role' => 'admin',
+            'email_verified_at' => now(),
+        ]);
+
+        return $this->tokenResponse($admin, 201);
     }
 
     public function me(Request $request): JsonResponse
