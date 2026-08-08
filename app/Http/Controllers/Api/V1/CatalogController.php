@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateCatalogDiscountRequest;
 use App\Http\Requests\UpsertCatalogRequest;
 use App\Http\Resources\CatalogResource;
 use App\Models\Catalog;
@@ -69,6 +70,19 @@ class CatalogController extends Controller
         $catalog->delete();
 
         return response()->json(status: 204);
+    }
+
+    public function updateDiscount(UpdateCatalogDiscountRequest $request, Catalog $catalog): CatalogResource
+    {
+        $data = $request->safe()->except('enabled');
+
+        if (! $request->boolean('enabled')) {
+            $data = ['discount_percent' => null, 'discount_starts_at' => null, 'discount_ends_at' => null];
+        }
+
+        $catalog->update($data);
+
+        return new CatalogResource($catalog->refresh()->load('category')->loadCount('colors'));
     }
 
     private function deleteImage(?string $path): void

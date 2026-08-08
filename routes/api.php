@@ -55,6 +55,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::apiResource('admin/projects', AdminProjectController::class)->only(['index', 'show', 'destroy']);
         Route::apiResource('categories', CategoryController::class)->only(['store', 'update', 'destroy']);
         Route::apiResource('catalogs', CatalogController::class)->only(['store', 'update', 'destroy']);
+        Route::patch('admin/catalogs/{catalog}/discount', [CatalogController::class, 'updateDiscount']);
         Route::apiResource('colors', ColorController::class)->only(['store', 'update', 'destroy']);
         Route::apiResource('services', ServiceController::class)->only(['store', 'update', 'destroy']);
         Route::apiResource('customers', CustomerController::class);

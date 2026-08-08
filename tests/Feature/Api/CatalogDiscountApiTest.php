@@ -46,4 +46,26 @@ class CatalogDiscountApiTest extends TestCase
             'discount_percent' => 20, 'discount_starts_at' => '2026-09-10', 'discount_ends_at' => '2026-09-01',
         ])->assertUnprocessable()->assertJsonValidationErrors(['price', 'discount_ends_at']);
     }
+
+    public function test_admin_can_manage_and_remove_a_collection_discount_from_the_dashboard_endpoint(): void
+    {
+        $catalog = Catalog::create(['name' => 'Dashboard Sale', 'slug' => 'dashboard-sale', 'status' => 'published']);
+
+        $this->patchJson("/api/v1/admin/catalogs/{$catalog->id}/discount", [
+            'enabled' => true,
+            'price' => 320,
+            'currency' => 'AED',
+            'discount_percent' => 15,
+        ])->assertOk()
+            ->assertJsonPath('data.has_active_discount', true)
+            ->assertJsonPath('data.sale_price', '272.00');
+
+        $this->patchJson("/api/v1/admin/catalogs/{$catalog->id}/discount", ['enabled' => false])
+            ->assertOk()
+            ->assertJsonPath('data.has_active_discount', false)
+            ->assertJsonPath('data.sale_price', null);
+
+        $this->assertNull($catalog->refresh()->discount_percent);
+        $this->assertSame('320.00', $catalog->price);
+    }
 }
