@@ -2,8 +2,6 @@
 
 return [
 
-    'admin_registration_key' => env('ADMIN_REGISTRATION_KEY'),
-
     /*
     |--------------------------------------------------------------------------
     | Third Party Services

@@ -25,7 +25,6 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::post('register', [AuthController::class, 'register']);
         Route::post('login', [AuthController::class, 'login']);
         Route::post('admin/login', [AuthController::class, 'adminLogin']);
-        Route::post('admin/register', [AuthController::class, 'registerAdmin'])->middleware('throttle:3,1');
         Route::get('me', [AuthController::class, 'me'])->middleware('jwt');
     });
 

@@ -100,36 +100,4 @@ class AuthenticationApiTest extends TestCase
         $this->assertSame('admin', $admin->role);
         $this->assertTrue(Hash::check(env('ADMIN_PASSWORD'), $admin->password));
     }
-
-    public function test_admin_can_register_with_the_configured_key_and_receive_a_dashboard_token(): void
-    {
-        config(['services.admin_registration_key' => 'test-registration-key']);
-
-        $response = $this->postJson('/api/v1/auth/admin/register', [
-            'name' => 'Test Administrator',
-            'email' => 'test-admin@example.com',
-            'password' => 'StrongPassword123!',
-            'password_confirmation' => 'StrongPassword123!',
-            'registration_key' => 'test-registration-key',
-        ])->assertCreated()->assertJsonPath('user.role', 'admin');
-
-        $admin = User::where('email', 'test-admin@example.com')->firstOrFail();
-        $this->assertTrue(Hash::check('StrongPassword123!', $admin->password));
-        $this->withToken($response->json('token'))->getJson('/api/v1/dashboard')->assertOk();
-    }
-
-    public function test_admin_registration_rejects_an_invalid_key(): void
-    {
-        config(['services.admin_registration_key' => 'expected-key']);
-
-        $this->postJson('/api/v1/auth/admin/register', [
-            'name' => 'Unauthorized Admin',
-            'email' => 'unauthorized@example.com',
-            'password' => 'StrongPassword123!',
-            'password_confirmation' => 'StrongPassword123!',
-            'registration_key' => 'wrong-key',
-        ])->assertUnprocessable()->assertJsonValidationErrors('registration_key');
-
-        $this->assertNull(User::where('email', 'unauthorized@example.com')->first());
-    }
 }
