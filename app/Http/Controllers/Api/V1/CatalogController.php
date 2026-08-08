@@ -19,6 +19,7 @@ class CatalogController extends Controller
             ->when($request->filled('category_id'), fn ($query) => $query->where('category_id', $request->integer('category_id')))
             ->when($request->string('status')->isNotEmpty(), fn ($query) => $query->where('status', $request->string('status')))
             ->when($request->boolean('featured'), fn ($query) => $query->where('is_featured', true))
+            ->when($request->boolean('discounted'), fn ($query) => $query->discounted())
             ->when($request->string('material')->isNotEmpty(), fn ($query) => $query->where('material', $request->string('material')))
             ->when($request->string('search')->isNotEmpty(), fn ($query) => $query->where(function ($query) use ($request) {
                 $query->where('name', 'like', '%'.$request->string('search').'%')->orWhere('sku', 'like', '%'.$request->string('search').'%');
@@ -40,7 +41,10 @@ class CatalogController extends Controller
         return new CatalogResource(Catalog::create($data)->load('category'));
     }
 
-    public function show(Catalog $catalog): CatalogResource { return new CatalogResource($catalog->load(['category', 'colors'])->loadCount('colors')); }
+    public function show(Catalog $catalog): CatalogResource
+    {
+        return new CatalogResource($catalog->load(['category', 'colors'])->loadCount('colors'));
+    }
 
     public function update(UpsertCatalogRequest $request, Catalog $catalog): CatalogResource
     {
@@ -80,5 +84,4 @@ class CatalogController extends Controller
             Storage::disk('public')->delete($path);
         }
     }
-
 }

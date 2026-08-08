@@ -20,6 +20,10 @@ class CatalogResource extends JsonResource
         $data['pdf_url'] = $this->fileUrl($this->pdf_path);
         $data['thumbnail_path'] = $data['thumbnail_url'];
         $data['pdf_path'] = $data['pdf_url'];
+        $data['has_active_discount'] = $this->hasActiveDiscount();
+        $data['sale_price'] = $this->hasActiveDiscount()
+            ? number_format((float) $this->price * (100 - $this->discount_percent) / 100, 2, '.', '')
+            : null;
 
         return $data;
     }
