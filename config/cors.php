@@ -29,6 +29,6 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => trait_uses_recursive('Foo\Bar\Baz'),
+    // 'supports_credentials' => trait_uses_recursive('Foo\Bar\Baz'),
 
 ];
